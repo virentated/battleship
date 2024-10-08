@@ -1,0 +1,5 @@
+To compile and run, run the following commands:
+    make        (build script)
+    .bin/app    (run executable)
+
+Note: Make sure all files in the src folder are included in your IDE's include path
