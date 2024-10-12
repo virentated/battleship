@@ -1,0 +1,17 @@
+# Executables
+*.exe
+*.out
+*.app
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Desktop Services Store
+*.DS_Store
+
+# VSCode
+.vscode
+
