@@ -6,7 +6,7 @@ inline sf::Text* initializeText(const std::string& textString, const sf::Vector2
     sf::Text* text = new sf::Text();
     text->setFont(*ResourceManager::getFont("TinyUnicode.ttf"));
     text->setString(textString);
-    text->setPosition(textPosition - sf::Vector2f(0, 45));  // Subtracting to account for the font's weird offset
+    text->setPosition(textPosition - sf::Vector2f(0, textSize / 1.75));  // Subtracting to account for the font's weird offset
     text->setCharacterSize(textSize);
     text->setFillColor(textColour);
     text->setLineSpacing(0);

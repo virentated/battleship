@@ -14,6 +14,7 @@ class MenuScreenState : public State {
         static std::vector<sf::Sprite*> sprites;
         static std::vector<Button*> buttons;
         sf::Text m_usernameText;
+        sf::CircleShape m_userIcon;
 
         std::vector<std::string> m_texturePaths{
             "MenuScreen/menuBackground.png",
