@@ -1,5 +1,5 @@
 #include "titleScreenState.hpp"
-#include "testState.hpp"
+#include "loginScreenState.hpp"
 
 #include <iostream>
 
@@ -24,7 +24,8 @@ TitleScreenState::TitleScreenState(StateManager& stateManager, sf::RenderWindow&
             sf::Vector2f(210*4, 110*4),
             sf::Vector2f(4, 4),
             *ResourceManager::getTexture(m_texturePaths[m_textureNames::PlayButtonIdleTexture]),
-            *ResourceManager::getTexture(m_texturePaths[m_textureNames::PlayButtonActiveTexture])
+            *ResourceManager::getTexture(m_texturePaths[m_textureNames::PlayButtonActiveTexture]),
+            m_window
         ));
     }
 
@@ -48,21 +49,12 @@ void TitleScreenState::processEvents() {
                 break;
             case sf::Event::MouseButtonReleased: {
                 if (event.mouseButton.button == sf::Mouse::Left && TitleScreenState::buttons[m_buttonNames::PlayButton]->getButtonState()) {
-                    std::unique_ptr<State> testState(new TestState(m_stateManager, m_window));
-                    m_stateManager.changeState(std::move(testState));
+                    playSound("buttonSelect.wav");
+                    std::unique_ptr<State> loginScreenState(new LoginScreenState(m_stateManager, m_window));
+                    m_stateManager.changeState(std::move(loginScreenState));
                 }
                 return;
             }
-            case sf::Event::KeyPressed:
-                switch (event.key.code) {
-                    case sf::Keyboard::Space: {
-                        std::unique_ptr<State> titleScreenState(new TestState(m_stateManager, m_window));
-                        m_stateManager.changeState(std::move(titleScreenState));
-                        return;
-                    }
-                    default:
-                        break;
-                }
             default:
                 break;
         }
@@ -81,7 +73,7 @@ void TitleScreenState::draw() {
         m_window.draw(*sprite);
     }
     for (Button* button : TitleScreenState::buttons) {
-        button->render(m_window);
+        button->render();
     }
 
     m_window.display();

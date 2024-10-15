@@ -1,5 +1,6 @@
 #pragma once
 #include "../states/titleScreenState.hpp"
+#include "../helpers/playMusic.hpp"
 
 class Game {
     public:

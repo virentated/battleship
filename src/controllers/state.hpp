@@ -1,8 +1,9 @@
 #pragma once
-#include "../enums/screen.hpp"
 #include "resourceManager.hpp"
 #include "../helpers/initializeSprite.hpp"
 #include "../helpers/initializeButton.hpp"
+#include "../helpers/initializeText.hpp"
+#include "../helpers/playSound.hpp"
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Mouse.hpp>
 

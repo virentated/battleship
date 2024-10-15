@@ -1,30 +1,31 @@
 #include "button.hpp"
 
 Button::Button(const sf::Vector2f& positionVector, const sf::Vector2f& scaleVector, 
-               const sf::Texture& idleTexture, const sf::Texture& activeTexture) {
+               const sf::Texture& idleTexture, const sf::Texture& activeTexture, sf::RenderWindow& window) 
+               : m_window{ window } {
     
     this->active = false;
-    this->idleTexture = &idleTexture;
-    this->activeTexture = &activeTexture;
+    this->m_idleTexture = &idleTexture;
+    this->m_activeTexture = &activeTexture;
 
     sf::Sprite* sprite = new sf::Sprite();
-    sprite->setTexture(*this->idleTexture);
+    sprite->setTexture(*this->m_idleTexture);
     sprite->setPosition(positionVector);
     sprite->setScale(scaleVector);
-    this->sprite = sprite;
+    this->m_sprite = sprite;
 }
 
-void Button::render(sf::RenderWindow& window) const {
+void Button::render() const {
     sf::Cursor cursor;
     if (active) {
         cursor.loadFromSystem(sf::Cursor::Hand);
-        window.setMouseCursor(cursor);
+        m_window.setMouseCursor(cursor);
     } else {
         cursor.loadFromSystem(sf::Cursor::Arrow);
-        window.setMouseCursor(cursor);
+        m_window.setMouseCursor(cursor);
     }
 
-    window.draw(*sprite);
+    m_window.draw(*m_sprite);
 }
 
 bool Button::getButtonState() const {
@@ -32,16 +33,17 @@ bool Button::getButtonState() const {
 }
 
 void Button::updateButtonState(sf::Vector2f mousePosition) {
-    if (sprite->getGlobalBounds().contains(mousePosition)) {
+    if (m_sprite->getGlobalBounds().contains(mousePosition)) {
         // If mouse is on the button
         if (!active) {
             active = true;
-            sprite->setTexture(*activeTexture);
+            playSound("buttonHover.wav");
+            m_sprite->setTexture(*m_activeTexture);
         }
     } else {
         if (active) {
             active = false;
-            sprite->setTexture(*idleTexture);
+            m_sprite->setTexture(*m_idleTexture);
         }
     }
 }

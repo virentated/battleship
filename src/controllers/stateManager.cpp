@@ -6,10 +6,14 @@ StateManager::StateManager() : m_running(true) {
 }
 
 StateManager::~StateManager() {
-    std::cout << "StateManager Destroyed\n";
-
     while (!m_states.empty()) 
         popState();
+
+    ResourceManager::clearTextures();
+    ResourceManager::clearSoundBuffers();
+    ResourceManager::clearFonts();
+    
+    std::cout << "StateManager Destroyed\n";  
 }
 
 void StateManager::pushState(std::unique_ptr<State> state) {
