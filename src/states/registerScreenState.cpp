@@ -73,15 +73,19 @@ void RegisterScreenState::processEvents() {
 
                     // TODO: condition to check if username is unique
 
-                    // If above conditions aren't met and password and confirm password fields are equal
-                    if (m_passwordField.getString() == m_confirmPasswordField.getString()) {
-                        playSound("registerButtonSelect.wav");
-                        std::unique_ptr<State> menuScreenState(new MenuScreenState(m_stateManager, m_window));
-                        m_stateManager.changeState(std::move(menuScreenState));
-
-                        // TODO: load user data into database
+                    // If password field doesn't match confirm password field
+                    if (m_passwordField.getString() != m_confirmPasswordField.getString()) {
+                        playSound("invalidButtonSelect.wav");
+                        m_errorText.setString("Passwords don't match!");
                         return;
                     }
+
+                    // If above conditions aren't met
+                    playSound("registerButtonSelect.wav");
+                    std::unique_ptr<State> menuScreenState(new MenuScreenState(m_stateManager, m_window));
+                    m_stateManager.changeState(std::move(menuScreenState));
+
+                    // TODO: load user data into database
 
                     return;
                 } else if (!m_errorText.getString().isEmpty()) 

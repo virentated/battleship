@@ -9,11 +9,19 @@ std::vector<Button*> TitleScreenState::buttons;
 TitleScreenState::TitleScreenState(StateManager& stateManager, sf::RenderWindow& window)
 : State( stateManager, window ) {
 
+    animationSwitch = false;
+
     // Initialize sprites if not already initialized
     if (TitleScreenState::sprites.empty()) {
         TitleScreenState::sprites.push_back(initializeSprite(
             *ResourceManager::getTexture(m_texturePaths[m_textureNames::TitleScreenTexture]),
             sf::Vector2f(0,0),
+            sf::Vector2f(4,4)
+        ));
+
+        TitleScreenState::sprites.push_back(initializeSprite(
+            *ResourceManager::getTexture(m_texturePaths[m_textureNames::TitleTextTexture]),
+            sf::Vector2f(31*4, 53*4),
             sf::Vector2f(4,4)
         ));
     }
@@ -64,6 +72,17 @@ void TitleScreenState::processEvents() {
 void TitleScreenState::update() {
     sf::Vector2f mousePosition = TitleScreenState::getMousePosition();
     buttons[m_buttonNames::PlayButton]->updateButtonState(mousePosition);
+
+
+    // Text floating animation
+    float globalTop = sprites[m_spriteNames::TitleText]->getGlobalBounds().top;
+    if (globalTop <= 202) animationSwitch = true;
+    else if (globalTop >= 212) animationSwitch = false;
+    
+    if (animationSwitch) 
+        sprites[m_spriteNames::TitleText]->move(sf::Vector2f(0, 0.5));
+    else 
+        sprites[m_spriteNames::TitleText]->move(sf::Vector2f(0, -0.5));
 }
 
 void TitleScreenState::draw() {

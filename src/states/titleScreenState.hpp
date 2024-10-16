@@ -14,20 +14,25 @@ class TitleScreenState : public State {
         static std::vector<sf::Sprite*> sprites;
         static std::vector<Button*> buttons;
 
+        bool animationSwitch;
+
         std::vector<std::string> m_texturePaths{
             "TitleScreen/titleScreen.png",
             "TitleScreen/playButtonIdle.png",
-            "TitleScreen/playButtonActive.png"
+            "TitleScreen/playButtonActive.png",
+            "TitleScreen/titleText.png"
         };
         
         enum m_textureNames {
             TitleScreenTexture,
             PlayButtonIdleTexture,
-            PlayButtonActiveTexture
+            PlayButtonActiveTexture,
+            TitleTextTexture
         };
 
         enum m_spriteNames {
-            TitleScreen
+            TitleScreen,
+            TitleText
         };
 
         enum m_buttonNames {
