@@ -10,6 +10,16 @@ std::vector<Button*> LoginScreenState::buttons;
 LoginScreenState::LoginScreenState(StateManager& stateManager, sf::RenderWindow& window)
 : State( stateManager, window ) {
 
+    // Initialize text input fields
+    m_usernameField = InputField(109*4, 52*4, 102*4, 16*4, sf::Color::Black);
+    m_passwordField = InputField(109*4, 92*4, 102*4, 16*4, sf::Color::Black);
+
+    // Initialize input field bar
+    m_inputFieldBar = InputFieldBar();
+
+    // Initialize error text
+    m_errorText = *initializeText("", sf::Vector2f(122*4, 142*4), 14*4, sf::Color::Red);
+
     // Initialize sprites if not already initialized
     if (LoginScreenState::sprites.empty()) {
         LoginScreenState::sprites.push_back(initializeSprite(
@@ -64,29 +74,157 @@ void LoginScreenState::processEvents() {
             case sf::Event::Closed:
                 m_stateManager.quit();
                 break;
+
             case sf::Event::MouseButtonReleased: {
-                // TODO: add conditions so login button only works when fields are filled in and username and password match
-                if (event.mouseButton.button == sf::Mouse::Left && LoginScreenState::buttons[m_buttonNames::LoginButton]->getButtonState()) {
+
+                // If login button is left clicked
+                if (event.mouseButton.button == sf::Mouse::Left
+                && LoginScreenState::buttons[m_buttonNames::LoginButton]->getButtonState()) {
+
+                    // If any input field is empty
+                    if (m_usernameField.getString().empty() || m_passwordField.getString().empty()) {
+                        playSound("invalidButtonSelect.wav");
+                        m_errorText.setString("Fill in all fields!");
+                        return;
+                    }
+
+                    // TODO: condition to check if username and password match user data in database
+
+                    // If above conditions are not met
                     playSound("buttonSelect.wav");
                     std::unique_ptr<State> menuScreenState(new MenuScreenState(m_stateManager, m_window));
                     m_stateManager.changeState(std::move(menuScreenState));
-                }
+                    return;
+                } else if (!m_errorText.getString().isEmpty()) 
+                    m_errorText.setString("");
 
                 // TODO: pass data as guest
-                if (event.mouseButton.button == sf::Mouse::Left && LoginScreenState::buttons[m_buttonNames::GuestButton]->getButtonState()) {
+                if (event.mouseButton.button == sf::Mouse::Left
+                && LoginScreenState::buttons[m_buttonNames::GuestButton]->getButtonState()) {
                     playSound("buttonSelect.wav");
                     std::unique_ptr<State> menuScreenState(new MenuScreenState(m_stateManager, m_window));
                     m_stateManager.changeState(std::move(menuScreenState));
+                    return;
                 }
 
-                // TODO: register button logic
-                if (event.mouseButton.button == sf::Mouse::Left && LoginScreenState::buttons[m_buttonNames::RegisterButton]->getButtonState()) {
+                // If register button is left clicked
+                if (event.mouseButton.button == sf::Mouse::Left
+                && LoginScreenState::buttons[m_buttonNames::RegisterButton]->getButtonState()) {
                     playSound("buttonSelect.wav");
                     std::unique_ptr<State> registerScreenState(new RegisterScreenState(m_stateManager, m_window));
                     m_stateManager.changeState(std::move(registerScreenState));
+                    return;
                 }
+
+                // If left click on username field
+                if (event.mouseButton.button == sf::Mouse::Left
+                && m_usernameField.clickedWhileInactive(getMousePosition())) {
+                    m_usernameField.setSelected(true);
+                    m_inputFieldBar.updateInputFieldBarPosition(
+                        m_usernameField.getText(), 
+                        m_usernameField.getFieldRect()
+                    );
+                    
+                    if (m_passwordField.getSelected()) m_passwordField.setSelected(false);
+                    return;
+                }
+
+                // If left click on password field
+                if (event.mouseButton.button == sf::Mouse::Left
+                && m_passwordField.clickedWhileInactive(getMousePosition())) {
+                    m_passwordField.setSelected(true);
+                    m_inputFieldBar.updateInputFieldBarPosition(
+                        m_passwordField.getText(), 
+                        m_passwordField.getFieldRect()
+                    );
+                    
+                    if (m_usernameField.getSelected()) m_usernameField.setSelected(false);
+                    return;
+                }
+
+                // If left click on neither input field and one is currently selected
+                if (event.mouseButton.button == sf::Mouse::Left 
+                    && (m_passwordField.getSelected() || m_usernameField.getSelected())
+                    && !m_passwordField.clicked(getMousePosition())
+                    && !m_usernameField.clicked(getMousePosition())) {
+
+                    if (m_passwordField.getSelected()) m_passwordField.setSelected(false);
+                    if (m_usernameField.getSelected()) m_usernameField.setSelected(false);
+                    m_inputFieldBar.setColour(sf::Color::Transparent);
+                    return;
+                }
+                
                 return;
             }
+
+            case sf::Event::TextEntered: {
+                // If neither field is selected, ignore input
+                if (!m_usernameField.getSelected() && !m_passwordField.getSelected()) return;
+                if (!m_errorText.getString().isEmpty()) m_errorText.setString("");
+
+                // Standard characters
+                if (event.text.unicode >= 33 && event.text.unicode <= 126) {
+                    if (m_usernameField.getSelected() && m_usernameField.getString().length() < 19) {
+                        m_usernameField.setText(m_usernameField.getString() + static_cast<char>(event.text.unicode));
+                        m_inputFieldBar.updateInputFieldBarPosition(
+                            m_usernameField.getText(), 
+                            m_usernameField.getFieldRect()
+                        );
+                    }
+
+                    if (m_passwordField.getSelected() && m_passwordField.getString().length() < 19) {
+                        m_passwordField.setText(m_passwordField.getString() + static_cast<char>(event.text.unicode));
+                        m_inputFieldBar.updateInputFieldBarPosition(
+                            m_passwordField.getText(), 
+                            m_passwordField.getFieldRect()
+                        );
+                    }       
+                }
+
+                // Backspace
+                if (event.text.unicode == 8) {
+                    if (m_usernameField.getSelected() && m_usernameField.getString().length() > 0) {
+                        std::string copyOfString = m_usernameField.getString();
+                        copyOfString.pop_back();
+                        m_usernameField.setText(copyOfString);
+                        m_inputFieldBar.updateInputFieldBarPosition(
+                            m_usernameField.getText(), 
+                            m_usernameField.getFieldRect()
+                        );
+                    }
+
+                    if (m_passwordField.getSelected() && m_passwordField.getString().length() > 0) {
+                        std::string copyOfString = m_passwordField.getString();
+                        copyOfString.pop_back();
+                        m_passwordField.setText(copyOfString);
+                        m_inputFieldBar.updateInputFieldBarPosition(
+                            m_passwordField.getText(), 
+                            m_passwordField.getFieldRect()
+                        );
+                    }
+                }
+            
+
+                // Enter or tab
+                if (event.text.unicode == 10 || event.text.unicode == 9) {
+                    if (m_passwordField.getSelected()) {
+                        m_passwordField.setSelected(false);
+                        m_inputFieldBar.setColour(sf::Color::Transparent);
+                    }
+                    
+                    if (m_usernameField.getSelected()) {
+                        m_usernameField.setSelected(false);
+                        m_passwordField.setSelected(true);
+                        m_inputFieldBar.updateInputFieldBarPosition(
+                            m_passwordField.getText(), 
+                            m_passwordField.getFieldRect()
+                        );
+                    }
+                }
+
+                return;
+            }
+
             default:
                 break;
         }
@@ -98,6 +236,11 @@ void LoginScreenState::update() {
     buttons[m_buttonNames::LoginButton]->updateButtonState(mousePosition);
     buttons[m_buttonNames::RegisterButton]->updateButtonState(mousePosition);
     buttons[m_buttonNames::GuestButton]->updateButtonState(mousePosition);
+
+    if (m_usernameField.getSelected() || m_passwordField.getSelected()) {
+        m_inputFieldBar.animate();
+    }
+
 }
 
 void LoginScreenState::draw() {
@@ -108,6 +251,14 @@ void LoginScreenState::draw() {
     }
     for (Button* button : LoginScreenState::buttons) {
         button->render();
+    }
+
+    m_usernameField.render(m_window);
+    m_passwordField.render(m_window);
+    m_inputFieldBar.render(m_window);
+
+    if (!m_errorText.getString().isEmpty()) {
+        m_window.draw(m_errorText);
     }
 
     m_window.display();

@@ -123,7 +123,7 @@ void UserSettingsScreenState::processEvents() {
                     m_stateManager.changeState(std::move(menuScreenState));
                 }
                 if (event.mouseButton.button == sf::Mouse::Left && buttons[m_buttonNames::LogoutButton]->getButtonState()) {
-                    playSound("buttonSelect.wav");
+                    playSound("logoutButtonSelect.wav");
                     std::unique_ptr<State> loginScreenState(new LoginScreenState(m_stateManager, m_window));
                     m_stateManager.changeState(std::move(loginScreenState));
                 }

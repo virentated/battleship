@@ -1,5 +1,7 @@
 #pragma once
 #include "../controllers/stateManager.hpp"
+#include "../entity/inputFieldBar.hpp"
+#include "../entity/inputField.hpp"
 
 class LoginScreenState : public State {
     public:
@@ -13,6 +15,13 @@ class LoginScreenState : public State {
     private:
         static std::vector<sf::Sprite*> sprites;
         static std::vector<Button*> buttons;
+
+        InputField m_usernameField;
+        InputField m_passwordField;
+
+        InputFieldBar m_inputFieldBar;
+
+        sf::Text m_errorText;
 
         std::vector<std::string> m_texturePaths{
             "LoginScreen/loginBackground.png",
