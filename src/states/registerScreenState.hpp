@@ -28,12 +28,16 @@ class RegisterScreenState : public State {
             "RegisterScreen/registerBackground.png",
             "RegisterScreen/registerButtonIdle.png",
             "RegisterScreen/registerButtonActive.png",
+            "RegisterScreen/backButtonIdle.png",
+            "RegisterScreen/backButtonActive.png",
         };
         
         enum m_textureNames {
             RegisterBackgroundTexture,
             RegisterButtonIdleTexture,
             RegisterButtonActiveTexture,
+            BackButtonIdleTexture,
+            BackButtonActiveTexture
         };
 
         enum m_spriteNames {
@@ -41,6 +45,7 @@ class RegisterScreenState : public State {
         };
 
         enum m_buttonNames {
-            RegisterButton
+            RegisterButton,
+            BackButton
         };
 };

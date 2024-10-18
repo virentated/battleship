@@ -1,5 +1,6 @@
 #include "registerScreenState.hpp"
 #include "menuScreenState.hpp"
+#include "loginScreenState.hpp"
 
 #include <iostream>
 
@@ -36,6 +37,14 @@ RegisterScreenState::RegisterScreenState(StateManager& stateManager, sf::RenderW
             sf::Vector2f(4, 4),
             *ResourceManager::getTexture(m_texturePaths[m_textureNames::RegisterButtonIdleTexture]),
             *ResourceManager::getTexture(m_texturePaths[m_textureNames::RegisterButtonActiveTexture]),
+            m_window
+        ));
+
+        buttons.push_back(initializeButton(
+            sf::Vector2f(0, 0),
+            sf::Vector2f(4, 4),
+            *ResourceManager::getTexture(m_texturePaths[m_textureNames::BackButtonIdleTexture]),
+            *ResourceManager::getTexture(m_texturePaths[m_textureNames::BackButtonActiveTexture]),
             m_window
         ));
     }
@@ -90,6 +99,14 @@ void RegisterScreenState::processEvents() {
                     return;
                 } else if (!m_errorText.getString().isEmpty()) 
                     m_errorText.setString("");
+
+                // If left click on back button
+                if (event.mouseButton.button == sf::Mouse::Left
+                && RegisterScreenState::buttons[m_buttonNames::BackButton]->getButtonState()) {
+                    playSound("buttonSelect.wav");
+                    std::unique_ptr<State> loginScreenState(new LoginScreenState(m_stateManager, m_window));
+                    m_stateManager.changeState(std::move(loginScreenState));
+                }
                 
 
                 // If left click on username field
@@ -256,6 +273,7 @@ void RegisterScreenState::processEvents() {
 void RegisterScreenState::update() {
     sf::Vector2f mousePosition = RegisterScreenState::getMousePosition();
     buttons[m_buttonNames::RegisterButton]->updateButtonState(mousePosition);
+    buttons[m_buttonNames::BackButton]->updateButtonState(mousePosition);
 
     if (m_usernameField.getSelected() || m_passwordField.getSelected() 
         || m_confirmPasswordField.getSelected()) m_inputFieldBar.animate();
