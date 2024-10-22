@@ -1,6 +1,9 @@
 #include "menuScreenState.hpp"
 #include "../helpers/initializeUserIcon.hpp"
 #include "userSettingsScreenState.hpp"
+#include "difficultySelectScreenState.hpp"
+#include "playerTwoLoginScreenState.hpp"
+
 
 #include <iostream>
 
@@ -89,11 +92,30 @@ void MenuScreenState::processEvents() {
             // TODO: add functionality to buttons
             case sf::Event::MouseButtonReleased: {
                 // TODO: make it so you can't access user settings page if logged in as guest
-                if (event.mouseButton.button == sf::Mouse::Left && MenuScreenState::buttons[m_buttonNames::UserSettingsButton]->getButtonState()) {
+                if (event.mouseButton.button == sf::Mouse::Left 
+                 && MenuScreenState::buttons[m_buttonNames::UserSettingsButton]->getButtonState()) {
                     playSound("buttonSelect.wav");
                     std::unique_ptr<State> userSettingsScreenState(new UserSettingsScreenState(m_stateManager, m_window));
                     m_stateManager.changeState(std::move(userSettingsScreenState));
+                    return;
                 }
+
+                if (event.mouseButton.button == sf::Mouse::Left 
+                 && MenuScreenState::buttons[m_buttonNames::PlayVsBotButton]->getButtonState()) {
+                    playSound("buttonSelect.wav");
+                    std::unique_ptr<State> difficultySelectScreenState(new DifficultySelectScreenState(m_stateManager, m_window));
+                    m_stateManager.changeState(std::move(difficultySelectScreenState));
+                    return;
+                }
+
+                if (event.mouseButton.button == sf::Mouse::Left 
+                 && MenuScreenState::buttons[m_buttonNames::PassAndPlayButton]->getButtonState()) {
+                    playSound("buttonSelect.wav");
+                    std::unique_ptr<State> playerTwoLoginScreenState(new PlayerTwoLoginScreenState(m_stateManager, m_window));
+                    m_stateManager.changeState(std::move(playerTwoLoginScreenState));
+                    return;
+                }
+
                 return;
             }
 
