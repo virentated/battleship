@@ -1,0 +1,50 @@
+//
+// Created by Jan Karcz on 2024-09-17.
+//
+
+#ifndef BOT_H
+#define BOT_H
+
+#include <iostream>
+#include <ostream>
+#include <iomanip>
+#include <vector>
+#include <map>
+#include<utility>
+#include<algorithm>
+#include<limits>
+
+#include "Engine.h"
+
+using namespace std;
+
+class Bot {
+    public:
+        vector<vector<vector<int>>> playGame(vector<vector<int>> shipLocations);
+
+    private:
+        vector<vector<vector<int>>> boardStates;
+        vector<int> ships = {2,3,3,4,5};
+        vector<pair<int,int>> hitShips;
+        vector<vector<int>> probBoard;
+        vector<vector<pair<int,int>>> potentialShips;
+        vector<pair<int,int>> hitSquares = {};
+
+        void initializeMap(int boardSize);
+        void fillProbBoard();
+        void fillProbBoard(const vector<vector<pair<int,int>>>& potentialShips);
+        pair<int,int> findHighestProb(const std::vector<std::pair<int, int>>& usedValues) const;
+        vector<vector<pair<int, int>>> findShips(const std::vector<std::pair<int, int>>& coordinates,const pair<int, int>& badCoordinate);
+
+        void removeShips(pair<int,int> nextSquare);
+        static vector<vector<pair<int, int>>>  removeShips(vector<vector<pair<int,int>>>, pair<int,int> nextSquare);
+        void printProbBoard(int boardSize) const;
+        static void printShipBoard(const vector<vector<int>> &shipLocations);
+        static bool shipOnBoard(int shipVal, const vector<vector<int>>& shipLocations);
+        void hitOnBoard(const vector<vector<int>>& shipLocations);
+        static bool shipsLeft(const vector<vector<int>>& shipLocations);
+
+        void hitLogic(const pair<int,int> &nextSquare, vector<vector<int>>& shipLocations, int shipVal);
+};
+
+#endif //BOT_H
