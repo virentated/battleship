@@ -47,13 +47,13 @@ FleetDeploymentScreenState::FleetDeploymentScreenState(StateManager& stateManage
         ));
 
         ships.push_back(new Ship(
-            *ResourceManager::getTexture(m_texturePaths[m_textureNames::Ship3Texture]),
+            *ResourceManager::getTexture(m_texturePaths[m_textureNames::Ship3aTexture]),
             sf::Vector2f(30*4, 70*4),
             sf::Vector2f(4,4)
         ));
 
         ships.push_back(new Ship(
-            *ResourceManager::getTexture(m_texturePaths[m_textureNames::Ship3Texture]),
+            *ResourceManager::getTexture(m_texturePaths[m_textureNames::Ship3bTexture]),
             sf::Vector2f(30*4, 110*4),
             sf::Vector2f(4,4)
         ));

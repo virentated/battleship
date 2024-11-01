@@ -21,7 +21,8 @@ class FleetDeploymentScreenState : public State {
         std::vector<std::string> m_texturePaths{
             "FleetDeploymentScreen/fleetDeploymentBackground.png",
             "FleetDeploymentScreen/ship2.png",
-            "FleetDeploymentScreen/ship3.png",
+            "FleetDeploymentScreen/ship3a.png",
+            "FleetDeploymentScreen/ship3b.png",
             "FleetDeploymentScreen/ship4.png",
             "FleetDeploymentScreen/ship5.png",
             "FleetDeploymentScreen/startButtonIdle.png",
@@ -33,7 +34,8 @@ class FleetDeploymentScreenState : public State {
         enum m_textureNames {
             FleetDeploymentBackgroundTexture,
             Ship2Texture,
-            Ship3Texture,
+            Ship3aTexture,
+            Ship3bTexture,
             Ship4Texture,
             Ship5Texture,
             StartButtonIdleTexture,
