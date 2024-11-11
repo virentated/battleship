@@ -135,11 +135,11 @@ bool Bot::shipOnBoard(int shipVal, const vector<vector<int>>& shipLocations) {
     for (const auto& row : shipLocations) {
         for (int element : row) {
             if (element == shipVal) {
-                return true; // Found the target
+                return true;
             }
         }
     }
-    return false; // Target not found
+    return false;
 }
 
 void Bot::hitOnBoard(const vector<vector<int>>& shipLocations) {
@@ -147,7 +147,7 @@ void Bot::hitOnBoard(const vector<vector<int>>& shipLocations) {
         for (int j = 0; j < shipLocations.size(); ++j) {
             if (shipLocations[i][j] > 100) {
                 pair<int, int> hit = {i, j};
-                hitShips.emplace_back(hit); // Found the target
+                hitShips.emplace_back(hit);
             }
         }
     }
@@ -157,14 +157,15 @@ bool Bot::shipsLeft(const vector<vector<int>>& shipLocations) {
     for (const auto& row : shipLocations) {
         for (const int element : row) {
             if (element > 0 && element < 50) {
-                return true; // Found the target
+                return true;
             }
         }
     }
-    return false; // Target not found
+    return false;
 }
 
 void Bot::hitLogic(const pair<int, int> &nextSquare,vector<vector<int>>& shipLocations, int shipVal) {
+    usedSquares.emplace_back(nextSquare);
     shipLocations[nextSquare.first][nextSquare.second] += 100;
     pair<int, int> nextShot = nextSquare;
     hitSquares.push_back(nextSquare);
@@ -245,23 +246,96 @@ void Bot::hitLogic(const pair<int, int> &nextSquare,vector<vector<int>>& shipLoc
     }
 }
 
-vector<vector<vector<int>>> Bot::playGame(vector<vector<int>> shipLocations) {
+int Bot::randomNumber(const int high) {
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> dist(0, high);
+    return dist(gen);
+}
+
+pair<int,int> Bot::chooseRandom() {
+    pair<int,int> nextSquare = {randomNumber(11), randomNumber(11)};
+    while (std::find(usedSquares.begin(), usedSquares.end(),nextSquare) != usedSquares.end()) {
+        nextSquare = {randomNumber(11), randomNumber(11)};
+    }
+    return nextSquare;
+}
+
+pair<int,int> Bot::blurredShot() {
+    pair<int,int> nextSquare = findHighestProb();
+    vector<pair<int,int>> potSquares;
+
+    for (int i = -1; i <= 1; i++) {
+        for (int j = -1; j <= 1; j++) {
+            int newX = nextSquare.first + i;
+            int newY = nextSquare.second + j;
+
+            if (newX >= 0 && newX <= 11 && newY >= 0 && newY <= 11) {
+                potSquares.emplace_back(newX, newY);
+            }
+        }
+    }
+
+    nextSquare = potSquares[randomNumber(potSquares.size())];
+    while (std::find(usedSquares.begin(), usedSquares.end(),nextSquare) != usedSquares.end()) {
+        nextSquare = potSquares[randomNumber(potSquares.size())];
+    }
+
+    if (nextSquare.first < 0 || nextSquare.first > 11 || nextSquare.second < 0 || nextSquare.second > 11) {
+        nextSquare = findHighestProb();
+    }
+
+    return nextSquare;
+}
+
+vector<vector<vector<int>>> Bot::playGame(vector<vector<int>> shipLocations, int difficulty) {
 
     const int boardSize = shipLocations.size();
     initializeMap(boardSize);
     fillProbBoard(potentialShips);
     while (!potentialShips.empty() and shipsLeft(shipLocations)) {
 
-        pair<int, int> nextSquare = findHighestProb();
-        if (shipLocations[nextSquare.first][nextSquare.second] > 0) {
-            int shipVal = shipLocations[nextSquare.first][nextSquare.second];
-            hitLogic(nextSquare, shipLocations, shipVal);
+        if (difficulty == 2) {
+            pair<int, int> nextSquare = findHighestProb();
+            if (shipLocations[nextSquare.first][nextSquare.second] > 0) {
+                int shipVal = shipLocations[nextSquare.first][nextSquare.second];
+                hitLogic(nextSquare, shipLocations, shipVal);
+            } else {
+                removeShips(nextSquare);
+                shipLocations[nextSquare.first][nextSquare.second] -= 100;
+                boardStates.emplace_back(shipLocations);
+            }
+            fillProbBoard(potentialShips);
+
+        } else if (difficulty == 1) {
+            pair<int, int> nextSquare = blurredShot();
+
+
+            if (shipLocations[nextSquare.first][nextSquare.second] > 0) {
+                int shipVal = shipLocations[nextSquare.first][nextSquare.second];
+                hitLogic(nextSquare, shipLocations, shipVal);
+            } else {
+
+                removeShips(nextSquare);
+                shipLocations[nextSquare.first][nextSquare.second] -= 100;
+                usedSquares.emplace_back(nextSquare);
+                boardStates.emplace_back(shipLocations);
+            }
+            fillProbBoard(potentialShips);
+
         } else {
-            removeShips(nextSquare);
-            shipLocations[nextSquare.first][nextSquare.second] -= 100;
-            boardStates.emplace_back(shipLocations);
+            pair<int, int> nextSquare = chooseRandom();
+
+            if (shipLocations[nextSquare.first][nextSquare.second] > 0) {
+                int shipVal = shipLocations[nextSquare.first][nextSquare.second];
+                hitLogic(nextSquare, shipLocations, shipVal);
+            } else {
+                removeShips(nextSquare);
+                shipLocations[nextSquare.first][nextSquare.second] -= 100;
+                usedSquares.emplace_back(nextSquare);
+                boardStates.emplace_back(shipLocations);
+            }
         }
-        fillProbBoard(potentialShips);
     }
     return boardStates;
 }
