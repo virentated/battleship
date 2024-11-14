@@ -5,7 +5,8 @@
 
 class FleetDeploymentScreenState : public State {
     public:
-        FleetDeploymentScreenState(StateManager& stateManager, sf::RenderWindow& window);
+        FleetDeploymentScreenState(StateManager& stateManager, sf::RenderWindow& window,
+                                   int botDifficulty = 0);
         ~FleetDeploymentScreenState();
 
         void processEvents() override;
@@ -17,6 +18,7 @@ class FleetDeploymentScreenState : public State {
         static std::vector<Button*> buttons;
         std::vector<Ship*> ships;
         sf::Text* m_instructionText;
+        int m_botDifficulty;
 
         // TODO: add P1 & P2 indicator for Pass & Play mode
 

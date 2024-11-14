@@ -77,7 +77,9 @@ void DifficultySelectScreenState::processEvents() {
                  && DifficultySelectScreenState::buttons[m_buttonNames::EasyButton]->getButtonState()) {
                     // TODO: set bot difficulty to easy
                     playSound("buttonSelect.wav");
-                    std::unique_ptr<State> fleetDeploymentScreenState(new FleetDeploymentScreenState(m_stateManager, m_window));
+                    std::unique_ptr<State> fleetDeploymentScreenState(new FleetDeploymentScreenState(
+                        m_stateManager, m_window, 0
+                    ));
                     m_stateManager.changeState(std::move(fleetDeploymentScreenState));
                     return;
                 }
@@ -86,7 +88,9 @@ void DifficultySelectScreenState::processEvents() {
                  && DifficultySelectScreenState::buttons[m_buttonNames::MediumButton]->getButtonState()) {
                     // TODO: set bot difficulty to medium
                     playSound("buttonSelect.wav");
-                    std::unique_ptr<State> fleetDeploymentScreenState(new FleetDeploymentScreenState(m_stateManager, m_window));
+                    std::unique_ptr<State> fleetDeploymentScreenState(new FleetDeploymentScreenState(
+                        m_stateManager, m_window, 1
+                        ));
                     m_stateManager.changeState(std::move(fleetDeploymentScreenState));
                     return;
                 }
@@ -95,7 +99,9 @@ void DifficultySelectScreenState::processEvents() {
                  && DifficultySelectScreenState::buttons[m_buttonNames::HardButton]->getButtonState()) {
                     // TODO: set bot difficulty to hard
                     playSound("buttonSelect.wav");
-                    std::unique_ptr<State> fleetDeploymentScreenState(new FleetDeploymentScreenState(m_stateManager, m_window));
+                    std::unique_ptr<State> fleetDeploymentScreenState(new FleetDeploymentScreenState(
+                        m_stateManager, m_window, 2
+                    ));
                     m_stateManager.changeState(std::move(fleetDeploymentScreenState));
                     return;
                 }
