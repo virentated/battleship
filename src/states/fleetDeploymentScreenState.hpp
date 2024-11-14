@@ -15,7 +15,7 @@ class FleetDeploymentScreenState : public State {
     private:
         static std::vector<sf::Sprite*> sprites;
         static std::vector<Button*> buttons;
-        static std::vector<Ship*> ships;
+        std::vector<Ship*> ships;
         sf::Text* m_instructionText;
 
         // TODO: add P1 & P2 indicator for Pass & Play mode

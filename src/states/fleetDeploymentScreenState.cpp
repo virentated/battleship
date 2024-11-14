@@ -6,7 +6,6 @@
 
 std::vector<sf::Sprite*> FleetDeploymentScreenState::sprites;
 std::vector<Button*> FleetDeploymentScreenState::buttons;
-std::vector<Ship*> FleetDeploymentScreenState::ships;
 
 FleetDeploymentScreenState::FleetDeploymentScreenState(StateManager& stateManager, sf::RenderWindow& window)
 : State( stateManager, window ), m_isDragging(false), m_shipBeingDragged(-1) {
@@ -39,38 +38,37 @@ FleetDeploymentScreenState::FleetDeploymentScreenState(StateManager& stateManage
         ));
     }
 
-    // Initialize ships if not already initialized
-    if (FleetDeploymentScreenState::ships.empty()) {
-        ships.push_back(new Ship(
-            *ResourceManager::getTexture(m_texturePaths[m_textureNames::Ship2Texture]),
-            sf::Vector2f(30*4, 40*4),
-            sf::Vector2f(4,4)
-        ));
+    // Initialize ships 
+    ships.push_back(new Ship(
+        *ResourceManager::getTexture(m_texturePaths[m_textureNames::Ship2Texture]),
+        sf::Vector2f(30*4, 40*4),
+        sf::Vector2f(4,4)
+    ));
 
-        ships.push_back(new Ship(
-            *ResourceManager::getTexture(m_texturePaths[m_textureNames::Ship3aTexture]),
-            sf::Vector2f(30*4, 70*4),
-            sf::Vector2f(4,4)
-        ));
+    ships.push_back(new Ship(
+        *ResourceManager::getTexture(m_texturePaths[m_textureNames::Ship3aTexture]),
+        sf::Vector2f(30*4, 70*4),
+        sf::Vector2f(4,4)
+    ));
 
-        ships.push_back(new Ship(
-            *ResourceManager::getTexture(m_texturePaths[m_textureNames::Ship3bTexture]),
-            sf::Vector2f(30*4, 110*4),
-            sf::Vector2f(4,4)
-        ));
+    ships.push_back(new Ship(
+        *ResourceManager::getTexture(m_texturePaths[m_textureNames::Ship3bTexture]),
+        sf::Vector2f(30*4, 110*4),
+        sf::Vector2f(4,4)
+    ));
 
-        ships.push_back(new Ship(
-            *ResourceManager::getTexture(m_texturePaths[m_textureNames::Ship4Texture]),
-            sf::Vector2f(60*4, 40*4),
-            sf::Vector2f(4,4)
-        ));
+    ships.push_back(new Ship(
+        *ResourceManager::getTexture(m_texturePaths[m_textureNames::Ship4Texture]),
+        sf::Vector2f(60*4, 40*4),
+        sf::Vector2f(4,4)
+    ));
 
-        ships.push_back(new Ship(
-            *ResourceManager::getTexture(m_texturePaths[m_textureNames::Ship5Texture]),
-            sf::Vector2f(60*4, 90*4),
-            sf::Vector2f(4,4)
-        ));
-    }
+    ships.push_back(new Ship(
+        *ResourceManager::getTexture(m_texturePaths[m_textureNames::Ship5Texture]),
+        sf::Vector2f(60*4, 90*4),
+        sf::Vector2f(4,4)
+    ));
+    
 
     // Initialize 12x12 grid
     int startWidth = 120 * 4;
@@ -101,11 +99,18 @@ FleetDeploymentScreenState::~FleetDeploymentScreenState() {
     cursor.loadFromSystem(sf::Cursor::Arrow);
     m_window.setMouseCursor(cursor);
 
+    // Delete GridCells
     for (int i = 0; i < 12; i++) {
         for (int j = 0; j < 12; j++) {
             delete m_grid[i][j];
             m_grid[i][j] = nullptr;
         }
+    }
+
+    // Delete Ships
+    for (Ship* ship : ships) {
+        delete ship;
+        ship = nullptr;
     }
 
     // Delete text
