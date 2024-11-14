@@ -1,6 +1,7 @@
 #pragma once
 #include "../controllers/stateManager.hpp"
 #include "../entity/ship.hpp"
+#include "../entity/gridCell.hpp"
 
 class FleetDeploymentScreenState : public State {
     public:
@@ -14,9 +15,22 @@ class FleetDeploymentScreenState : public State {
     private:
         static std::vector<sf::Sprite*> sprites;
         static std::vector<Button*> buttons;
-        static std::vector<Ship*> ships;
+        std::vector<Ship*> ships;
+        sf::Text* m_instructionText;
 
         // TODO: add P1 & P2 indicator for Pass & Play mode
+
+        // Grid Members
+        GridCell* m_grid[12][12];
+        bool m_isDragging;
+        int m_shipBeingDragged;
+        int m_shipLocations[12][12] = {};  // initialize as 2d array of zeros
+        bool checkValidShipLocation(const int& row, const int& column, 
+                                    const int& shipName, const bool& isShipHorizontal);
+        void fillShipLocation(const int& row, const int& column, 
+                              const int& shipName, const bool& isShipHorizontal);
+        void checkAllShipsPlaced();
+        bool m_allShipsPlaced = false;
 
         std::vector<std::string> m_texturePaths{
             "FleetDeploymentScreen/fleetDeploymentBackground.png",
