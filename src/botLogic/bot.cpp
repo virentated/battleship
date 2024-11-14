@@ -303,6 +303,7 @@ vector<vector<vector<int>>> Bot::playGame(vector<vector<int>> shipLocations, int
             } else {
                 removeShips(nextSquare);
                 shipLocations[nextSquare.first][nextSquare.second] -= 100;
+                shots.emplace_back(nextSquare);
                 boardStates.emplace_back(shipLocations);
             }
             fillProbBoard(potentialShips);
@@ -319,6 +320,7 @@ vector<vector<vector<int>>> Bot::playGame(vector<vector<int>> shipLocations, int
                 removeShips(nextSquare);
                 shipLocations[nextSquare.first][nextSquare.second] -= 100;
                 usedSquares.emplace_back(nextSquare);
+                shots.emplace_back(nextSquare);
                 boardStates.emplace_back(shipLocations);
             }
             fillProbBoard(potentialShips);
@@ -333,6 +335,7 @@ vector<vector<vector<int>>> Bot::playGame(vector<vector<int>> shipLocations, int
                 removeShips(nextSquare);
                 shipLocations[nextSquare.first][nextSquare.second] -= 100;
                 usedSquares.emplace_back(nextSquare);
+                shots.emplace_back(nextSquare);
                 boardStates.emplace_back(shipLocations);
             }
         }
