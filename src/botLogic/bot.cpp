@@ -170,9 +170,7 @@ void Bot::hitLogic(const pair<int, int> &nextSquare,vector<vector<int>>& shipLoc
     pair<int, int> nextShot = nextSquare;
     hitSquares.push_back(nextSquare);
     vector<vector<pair<int,int>>> possShips;
-
     while(shipOnBoard(shipVal, shipLocations)) {
-        shots.emplace_back(nextSquare);
         boardStates.emplace_back(shipLocations);
         if (hitSquares.size() > 5) {
             possShips = findShips({hitSquares.front()});
@@ -208,9 +206,11 @@ void Bot::hitLogic(const pair<int, int> &nextSquare,vector<vector<int>>& shipLoc
         if (shipLocations[nextShot.first][nextShot.second] == 0) {
             removeShips(nextShot);
             shipLocations[nextShot.first][nextShot.second] -= 100;
+            shots.emplace_back(nextShot);
         } else {
             hitSquares.emplace_back(nextShot);
             shipLocations[nextShot.first][nextShot.second] += 100;
+            shots.emplace_back(nextShot);
         }
     }
     int sunkShip = shipLocations[hitSquares.back().first][hitSquares.back().second];
