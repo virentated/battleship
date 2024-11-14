@@ -172,6 +172,7 @@ void Bot::hitLogic(const pair<int, int> &nextSquare,vector<vector<int>>& shipLoc
     vector<vector<pair<int,int>>> possShips;
 
     while(shipOnBoard(shipVal, shipLocations)) {
+        shots.emplace_back(nextSquare);
         boardStates.emplace_back(shipLocations);
         if (hitSquares.size() > 5) {
             possShips = findShips({hitSquares.front()});
@@ -288,7 +289,7 @@ pair<int,int> Bot::blurredShot() {
     return nextSquare;
 }
 
-vector<vector<vector<int>>> Bot::playGame(vector<vector<int>> shipLocations, int difficulty) {
+vector<pair<int, int>> Bot::playGame(vector<vector<int>> shipLocations, int difficulty) {
 
     const int boardSize = shipLocations.size();
     initializeMap(boardSize);
@@ -340,6 +341,6 @@ vector<vector<vector<int>>> Bot::playGame(vector<vector<int>> shipLocations, int
             }
         }
     }
-    return boardStates;
+    return shots;
 }
 
