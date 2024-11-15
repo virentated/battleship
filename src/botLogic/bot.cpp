@@ -204,13 +204,12 @@ void Bot::hitLogic(const pair<int, int> &nextSquare,vector<vector<int>>& shipLoc
             nextShot = findHighestProb(hitSquares);
         }
         if (shipLocations[nextShot.first][nextShot.second] == 0) {
+            shots.emplace_back(nextShot);
             removeShips(nextShot);
             shipLocations[nextShot.first][nextShot.second] -= 100;
-            shots.emplace_back(nextShot);
         } else {
             hitSquares.emplace_back(nextShot);
             shipLocations[nextShot.first][nextShot.second] += 100;
-            shots.emplace_back(nextShot);
         }
     }
     int sunkShip = shipLocations[hitSquares.back().first][hitSquares.back().second];
@@ -222,6 +221,7 @@ void Bot::hitLogic(const pair<int, int> &nextSquare,vector<vector<int>>& shipLoc
         }
     }
     hitOnBoard(shipLocations);
+    shots.insert(shots.end(), hitSquares.begin(), hitSquares.end());
     hitSquares.clear();
 
     if (!hitShips.empty()) {
@@ -243,6 +243,7 @@ void Bot::hitLogic(const pair<int, int> &nextSquare,vector<vector<int>>& shipLoc
     hitShips.end()
 );
         shipLocations[hitShot.first][hitShot.second] -= 100;
+        shots.emplace_back(hitShot);
         hitLogic(hitShot, shipLocations, shipLocations[hitShot.first][hitShot.second]);
     }
 }
@@ -321,7 +322,6 @@ vector<pair<int, int>> Bot::playGame(vector<vector<int>> shipLocations, int diff
                 removeShips(nextSquare);
                 shipLocations[nextSquare.first][nextSquare.second] -= 100;
                 usedSquares.emplace_back(nextSquare);
-                shots.emplace_back(nextSquare);
                 boardStates.emplace_back(shipLocations);
             }
             fillProbBoard(potentialShips);
