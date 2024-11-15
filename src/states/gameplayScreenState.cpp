@@ -1,11 +1,13 @@
 #include "gameplayScreenState.hpp"
 #include "menuScreenState.hpp"
+#include "gameOverScreenState.hpp"
 #include "../helpers/copy2dArray.hpp"
 #include "../helpers/generateRandomBoard.hpp"
 #include "../botLogic/bot.h"
 #include "../helpers/convertArrayToVector.hpp"
 #include <vector>
 #include <iostream>
+#include <unordered_map>
 
 std::vector<sf::Sprite*> GameplayScreenState::sprites;
 std::vector<Button*> GameplayScreenState::buttons;
@@ -23,14 +25,14 @@ GameplayScreenState::GameplayScreenState(StateManager& stateManager, sf::RenderW
     for (int i = 0; i <12; ++i) {
       for (int j = 0; j <12; ++j) {
         m_enemyShipLocations[i][j] = enemyShipLocationsVector[i][j];
-        std::cout << m_enemyShipLocations[i][j] << " ";
+        std::cout << enemyShipLocationsVector[i][j] << " ";
       }
       std::cout << std::endl;
-   }
+    }
 
     // Get bot moves
     Bot* bot = new Bot();
-    botBoardStates = bot->playGame(
+    botMoves = bot->playGame(
         convertArrayToVector(m_playerShipLocations),
         difficulty
     );
@@ -121,6 +123,151 @@ GameplayScreenState::GameplayScreenState(StateManager& stateManager, sf::RenderW
         }
     }
 
+    // Initialize Ships
+    // Key is shipIndicatorNumber
+    // Value is a pair, where the first value is the position where the ship should be
+    // and the second value is a bool if the ship should be rotated
+    std::unordered_map<int, std::pair<sf::Vector2f, bool>> shipPositions;
+    for (int i = 0; i < 12; i++) {
+        for (int j = 0; j < 12; j++) {
+            // If blue ship found
+            if (shipPositions.find(1) == shipPositions.end()
+             && m_enemyShipLocations[i][j] == 1) {
+                std::pair<sf::Vector2f, bool> entry;
+                if (j < 11 && m_enemyShipLocations[i][j + 1] == 1) {
+                    // Horizontal
+                    entry.first = sf::Vector2f(
+                        startWidth + (j * 40) + 4, (startHeight + (i * 40)) + 40
+                    );
+                    entry.second = true;
+                } else {
+                    // Vertical
+                    entry.first = sf::Vector2f(
+                        startWidth + (j * 40) + 4, (startHeight + (i * 40))
+                    );
+                    entry.second = false;
+                }
+                shipPositions[1] = entry;
+            }
+
+            // If green ship found
+            if (shipPositions.find(2) == shipPositions.end()
+             && m_enemyShipLocations[i][j] == 2) {
+                std::pair<sf::Vector2f, bool> entry;
+                if (j < 11 && m_enemyShipLocations[i][j + 1] == 2) {
+                    // Horizontal
+                    entry.first = sf::Vector2f(
+                        startWidth + (j * 40) + 4, (startHeight + (i * 40)) + 40
+                    );
+                    entry.second = true;
+                } else {
+                    // Vertical
+                    entry.first = sf::Vector2f(
+                        startWidth + (j * 40) + 4, (startHeight + (i * 40))
+                    );
+                    entry.second = false;
+                }
+                shipPositions[2] = entry;
+            }
+
+            // If pink ship found
+            if (shipPositions.find(3) == shipPositions.end()
+             && m_enemyShipLocations[i][j] == 3) {
+                std::pair<sf::Vector2f, bool> entry;
+                if (j < 11 && m_enemyShipLocations[i][j + 1] == 3) {
+                    // Horizontal
+                    entry.first = sf::Vector2f(
+                        startWidth + (j * 40) + 4, (startHeight + (i * 40)) + 40
+                    );
+                    entry.second = true;
+                } else {
+                    // Vertical
+                    entry.first = sf::Vector2f(
+                        startWidth + (j * 40) + 4, (startHeight + (i * 40))
+                    );
+                    entry.second = false;
+                }
+                shipPositions[3] = entry;
+            }
+
+            // If orange ship found
+            if (shipPositions.find(4) == shipPositions.end()
+             && m_enemyShipLocations[i][j] == 4) {
+                std::pair<sf::Vector2f, bool> entry;
+                if (j < 11 && m_enemyShipLocations[i][j + 1] == 4) {
+                    // Horizontal
+                    entry.first = sf::Vector2f(
+                        startWidth + (j * 40) + 4, (startHeight + (i * 40)) + 40
+                    );
+                    entry.second = true;
+                } else {
+                    // Vertical
+                    entry.first = sf::Vector2f(
+                        startWidth + (j * 40) + 4, (startHeight + (i * 40))
+                    );
+                    entry.second = false;
+                }
+                shipPositions[4] = entry;
+            }
+
+            // If yellow ship found
+            if (shipPositions.find(5) == shipPositions.end()
+             && m_enemyShipLocations[i][j] == 5) {
+                std::pair<sf::Vector2f, bool> entry;
+                if (j < 11 && m_enemyShipLocations[i][j + 1] == 5) {
+                    // Horizontal
+                    entry.first = sf::Vector2f(
+                        startWidth + (j * 40) + 4, (startHeight + (i * 40)) + 40
+                    );
+                    entry.second = true;
+                } else {
+                    // Vertical
+                    entry.first = sf::Vector2f(
+                        startWidth + (j * 40) + 4, (startHeight + (i * 40))
+                    );
+                    entry.second = false;
+                }
+                shipPositions[5] = entry;
+            }
+        }
+    }
+
+    m_blueShip = initializeSprite(
+        *ResourceManager::getTexture(m_texturePaths[m_textureNames::BlueShipTexture]),
+        shipPositions[1].first,
+        sf::Vector2f(4,4)
+    );
+    if (shipPositions[1].second) m_blueShip->setRotation(-90);
+
+    m_greenShip = initializeSprite(
+        *ResourceManager::getTexture(m_texturePaths[m_textureNames::GreenShipTexture]),
+        shipPositions[2].first,
+        sf::Vector2f(4,4)
+    );
+    if (shipPositions[2].second) m_greenShip->setRotation(-90);
+
+    m_pinkShip = initializeSprite(
+        *ResourceManager::getTexture(m_texturePaths[m_textureNames::PinkShipTexture]),
+        shipPositions[3].first,
+        sf::Vector2f(4,4)
+    );
+    if (shipPositions[3].second) m_pinkShip->setRotation(-90);
+
+    m_orangeShip = initializeSprite(
+        *ResourceManager::getTexture(m_texturePaths[m_textureNames::OrangeShipTexture]),
+        shipPositions[4].first,
+        sf::Vector2f(4,4)
+    );
+    if (shipPositions[4].second) m_orangeShip->setRotation(-90);
+
+    m_yellowShip = initializeSprite(
+        *ResourceManager::getTexture(m_texturePaths[m_textureNames::YellowShipTexture]),
+        shipPositions[5].first,
+        sf::Vector2f(4,4)
+    );
+    if (shipPositions[5].second) m_yellowShip->setRotation(-90);
+
+
     // Initialize Ship X's
     for (int i = 0; i < 2; i++) {
         m_blueShipXs[i] = initializeSprite(
@@ -185,6 +332,18 @@ GameplayScreenState::~GameplayScreenState() {
     // Delete grid boundary
     delete m_gridBoundary;
     m_gridBoundary = nullptr;
+
+    // Delete ships
+    delete m_blueShip;
+    m_blueShip = nullptr;
+    delete m_greenShip;
+    m_greenShip = nullptr;
+    delete m_pinkShip;
+    m_pinkShip = nullptr;
+    delete m_orangeShip;
+    m_orangeShip = nullptr;
+    delete m_yellowShip;
+    m_yellowShip = nullptr;
 
     // Delete ship X's
     for (sf::Sprite* sprite : m_blueShipXs) {
@@ -266,6 +425,92 @@ bool GameplayScreenState::isShipSunk(int shipNumberIndicator, int row, int col) 
     return true;
 }
 
+bool GameplayScreenState::botTurn() {
+    int row = botMoves[botMoveIndex].first;
+    int col = botMoves[botMoveIndex].second;
+
+    if (m_playerShipLocations[row][col] == 0) {
+        // If miss
+        m_miniGrid[row][col]->setTopTexture(
+            m_miniGridCellTextures::MiniMissTexture
+        );
+    } else {
+        // If hit
+        m_miniGrid[row][col]->setTopTexture(
+            m_miniGridCellTextures::MiniHitTexture
+        );
+    }
+
+    botMoveIndex++;
+
+    // If index reaches the end of the bot's moves, the bot wins
+    return botMoveIndex == botMoves.size();
+    
+}
+
+void GameplayScreenState::shipHitAttempt() {
+    sf::Vector2f mousePosition = getMousePosition();
+    for (int i = 0; i < 12; i++) {
+        for (int j = 0; j < 12; j++) {
+            if (m_grid[i][j]->isInsideRect(mousePosition) && m_gridHitMap[i][j] == 0) {
+
+                if (m_enemyShipLocations[i][j] == 0) {
+                    // If miss
+                    m_grid[i][j]->setSpriteTexture(
+                        m_gridCellTextures::MissTexture
+                    );
+
+                    playSound("shipMiss.wav");
+                } else {
+                    // If hit
+                    m_grid[i][j]->setSpriteTexture(
+                        m_gridCellTextures::HitTexture
+                    );
+
+                    // Check if ship sank
+                    int currentShipIndicator = m_enemyShipLocations[i][j];
+                    m_enemyShipLocations[i][j] = 0;  // Set enemy ship location back to 0
+
+                    if (isShipSunk(currentShipIndicator, i, j)) {
+                        // Ship sank
+                        playSound("shipSink.wav");
+
+                        // Check for win
+                        if (m_blueSank && m_greenSank && m_pinkSank 
+                            && m_orangeSank && m_yellowSank) {
+                            std::unique_ptr<State> gameOverScreenState(
+                                new GameOverScreenState(
+                                    m_stateManager, m_window, 
+                                    m_gameOverTextures::YouWin
+                                )
+                            );
+                            m_stateManager.changeState(
+                                std::move(gameOverScreenState)
+                            );
+                            return;
+                        }
+                    } else {
+                        // Ship still alive
+                        playSound("shipHit.wav");
+                    }
+                }
+                
+                m_gridHitMap[i][j] = 1;
+
+                // Run bot's turn
+                if (!m_isMultiplayer && botTurn()) {
+                    // If bot wins
+                    std::unique_ptr<State> gameOverScreenState(new GameOverScreenState(
+                        m_stateManager, m_window, m_gameOverTextures::YouLose
+                    ));
+                    m_stateManager.changeState(std::move(gameOverScreenState));
+                    return;
+                }
+            }
+        }
+    }
+}
+
 void GameplayScreenState::processEvents() {
     sf::Event event;
 
@@ -277,44 +522,8 @@ void GameplayScreenState::processEvents() {
             case sf::Event::MouseButtonReleased: {
 
                 // If left click on grid cell
-                sf::Vector2f mousePosition = getMousePosition();
                 if (event.mouseButton.button == sf::Mouse::Left && isMouseInGrid) {
-                    for (int i = 0; i < 12; i++) {
-                        for (int j = 0; j < 12; j++) {
-                            if (m_grid[i][j]->isInsideRect(mousePosition)
-                             && m_gridHitMap[i][j] == 0) {
-
-                                if (m_enemyShipLocations[i][j] == 0) {
-                                    // If miss
-                                    m_grid[i][j]->setSpriteTexture(
-                                        m_gridCellTextures::MissTexture
-                                    );
-
-                                    playSound("shipMiss.wav");
-                                } else {
-                                    // If hit
-                                    m_grid[i][j]->setSpriteTexture(
-                                        m_gridCellTextures::HitTexture
-                                    );
-
-                                    // Check if ship sank
-                                    int currentShipIndicator = m_enemyShipLocations[i][j];
-                                    m_enemyShipLocations[i][j] = 0;  // Set enemy ship location back to 0
-
-                                    if (isShipSunk(currentShipIndicator, i, j)) {
-                                        // Ship sank
-                                        playSound("shipSink.wav");
-                                    } else {
-                                        // Ship still alive
-                                        playSound("shipHit.wav");
-                                    }
-
-                                }
-
-                                m_gridHitMap[i][j] = 1;
-                            }
-                        }
-                    }
+                    shipHitAttempt();
                     return;
                 }
                 
@@ -359,6 +568,38 @@ void GameplayScreenState::draw() {
         }
     }
 
+    // Render Ships & Ship X's
+    if (m_blueSank) {
+        m_window.draw(*m_blueShip);
+        for (sf::Sprite* sprite : m_blueShipXs) {
+            m_window.draw(*sprite);
+        }
+    }
+    if (m_greenSank) {
+        m_window.draw(*m_greenShip);
+        for (sf::Sprite* sprite : m_greenShipXs) {
+            m_window.draw(*sprite);
+        }
+    }
+    if (m_pinkSank) {
+        m_window.draw(*m_pinkShip);
+        for (sf::Sprite* sprite : m_pinkShipXs) {
+            m_window.draw(*sprite);
+        }
+    }
+    if (m_orangeSank) {
+        m_window.draw(*m_orangeShip);
+        for (sf::Sprite* sprite : m_orangeShipXs) {
+            m_window.draw(*sprite);
+        }
+    }
+    if (m_yellowSank) {
+        m_window.draw(*m_yellowShip);
+        for (sf::Sprite* sprite : m_yellowShipXs) {
+            m_window.draw(*sprite);
+        }
+    }
+
     // Render GridCells
     for (int i = 0; i < 12; i++) {
         for (int j = 0; j < 12; j++) {
@@ -366,33 +607,5 @@ void GameplayScreenState::draw() {
         }
     }
 
-    // Render Ship X's
-    if (m_blueSank) {
-        for (sf::Sprite* sprite : m_blueShipXs) {
-            m_window.draw(*sprite);
-        }
-    }
-    if (m_greenSank) {
-        for (sf::Sprite* sprite : m_greenShipXs) {
-            m_window.draw(*sprite);
-        }
-    }
-    if (m_pinkSank) {
-        for (sf::Sprite* sprite : m_pinkShipXs) {
-            m_window.draw(*sprite);
-        }
-    }
-    if (m_orangeSank) {
-        for (sf::Sprite* sprite : m_orangeShipXs) {
-            m_window.draw(*sprite);
-        }
-    }
-    if (m_yellowSank) {
-        for (sf::Sprite* sprite : m_yellowShipXs) {
-            m_window.draw(*sprite);
-        }
-    }
-
     m_window.display();
 }
-

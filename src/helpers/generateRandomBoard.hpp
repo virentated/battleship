@@ -5,11 +5,11 @@
 
 using namespace std;
  
-vector<vector<int>> shipLocations;
-vector<int> ships = {2,3,3,4,5};
-int boardDimension = 12;
- 
 inline vector<vector<int>> generateRandomBoard() {
+
+    vector<vector<int>> shipLocations;
+    vector<int> ships = {2,3,3,4,5};
+    int boardDimension = 12;
  
     shipLocations.resize(boardDimension, vector<int>(boardDimension, 0));
     int shipOriginX, shipOriginY;

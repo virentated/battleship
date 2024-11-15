@@ -2,6 +2,7 @@
 #include "../controllers/stateManager.hpp"
 #include "../entity/gridCell.hpp"
 #include "../entity/miniGridCell.hpp"
+#include <utility>
 
 class GameplayScreenState : public State {
     public:
@@ -20,6 +21,8 @@ class GameplayScreenState : public State {
         static std::vector<Button*> buttons;
 
         bool m_isMultiplayer;
+
+        void shipHitAttempt();
 
         // TODO: add P1 & P2 indicator for Pass & Play mode
 
@@ -60,14 +63,36 @@ class GameplayScreenState : public State {
         bool m_pinkSank = false;
         bool m_orangeSank = false;
         bool m_yellowSank = false;
+        sf::Sprite* m_blueShip;
+        sf::Sprite* m_greenShip;
+        sf::Sprite* m_pinkShip;
+        sf::Sprite* m_orangeShip;
+        sf::Sprite* m_yellowShip;
 
-        std::vector<std::vector<std::vector<int>>> botBoardStates;
+        // Bot Members
+        std::vector<std::pair<int,int>> botMoves;
+        int botMoveIndex = 0;
+        bool botTurn();
+
+        // Game Result Enum
+        enum m_gameOverTextures {
+            YouWin,
+            YouLose,
+            Player1Wins,
+            Player2Wins
+        };
 
         std::vector<std::string> m_texturePaths{
             "GameplayScreen/gameplayScreenBackground.png",
             "GameplayScreen/giveUpButtonIdle.png",
             "GameplayScreen/giveUpButtonActive.png",
             "GameplayScreen/shipCubeHit.png",
+            "FleetDeploymentScreen/ship2.png",
+            "FleetDeploymentScreen/ship3a.png",
+            "FleetDeploymentScreen/ship3b.png",
+            "FleetDeploymentScreen/ship4.png",
+            "FleetDeploymentScreen/ship5.png"
+            
         };
         
         enum m_textureNames {
@@ -75,11 +100,21 @@ class GameplayScreenState : public State {
             GiveUpButtonIdleTexture,
             GiveUpButtonActiveTexture,
             ShipCubeHitTexture,
+            BlueShipTexture,
+            GreenShipTexture,
+            PinkShipTexture,
+            OrangeShipTexture,
+            YellowShipTexture
         };
 
         enum m_spriteNames {
             GameplayScreenBackground,
             ShipCubeHit,
+            BlueShip,
+            GreenShip,
+            PinkShip,
+            OrangeShip,
+            YellowShip
         };
 
         enum m_buttonNames {
