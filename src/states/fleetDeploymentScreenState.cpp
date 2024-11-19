@@ -1,5 +1,6 @@
 #include "fleetDeploymentScreenState.hpp"
 #include "menuScreenState.hpp"
+#include "gameplayScreenState.hpp"
 
 #include <iostream>
 #include <unordered_map>
@@ -7,8 +8,9 @@
 std::vector<sf::Sprite*> FleetDeploymentScreenState::sprites;
 std::vector<Button*> FleetDeploymentScreenState::buttons;
 
-FleetDeploymentScreenState::FleetDeploymentScreenState(StateManager& stateManager, sf::RenderWindow& window)
-: State( stateManager, window ), m_isDragging(false), m_shipBeingDragged(-1) {
+FleetDeploymentScreenState::FleetDeploymentScreenState(StateManager& stateManager, sf::RenderWindow& window,
+ int botDifficulty) : State( stateManager, window ), m_isDragging(false), 
+ m_shipBeingDragged(-1), m_botDifficulty(botDifficulty) {
 
     // Initialize sprites if not already initialized
     if (FleetDeploymentScreenState::sprites.empty()) {
@@ -366,17 +368,17 @@ void FleetDeploymentScreenState::processEvents() {
 
                 // If left click on start button
                 if (event.mouseButton.button == sf::Mouse::Left
-                 && FleetDeploymentScreenState::buttons[m_buttonNames::StartButton]->getButtonState()) {
+                 && FleetDeploymentScreenState::buttons[m_buttonNames::StartButton]->getButtonState()
+                 && m_allShipsPlaced) {
                     playSound("buttonSelect.wav");
 
-                    // TODO: Send grid to bot, advance to Game screen
-                    for (int i = 0; i < 12; i++) {
-                        for (int j = 0; j < 12; j++) {
-                            std::cout << m_shipLocations[i][j] << " ";
-                        }
-                        std::cout << std::endl;
-                    }
-                    std::cout << std::endl;
+                    // Send to gameplay screen vs. bot
+                    std::unique_ptr<State> gameplayScreenState(new GameplayScreenState(
+                        m_stateManager, m_window, false, m_shipLocations, {}, m_botDifficulty
+                    ));
+                    m_stateManager.changeState(std::move(gameplayScreenState));
+
+                    // TODO: Pass & Play setup
                     return;
                 }
 
@@ -400,7 +402,7 @@ void FleetDeploymentScreenState::processEvents() {
 void FleetDeploymentScreenState::update() {
     sf::Vector2f mousePosition = FleetDeploymentScreenState::getMousePosition();
     buttons[m_buttonNames::HomeButton]->updateButtonState(mousePosition);
-    buttons[m_buttonNames::StartButton]->updateButtonState(mousePosition);
+    if (m_allShipsPlaced) buttons[m_buttonNames::StartButton]->updateButtonState(mousePosition);
     ships[m_shipNames::Ship2]->updateHoverState(mousePosition);
     ships[m_shipNames::Ship3a]->updateHoverState(mousePosition);
     ships[m_shipNames::Ship3b]->updateHoverState(mousePosition);

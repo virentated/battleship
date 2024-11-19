@@ -19,10 +19,11 @@ using namespace std;
 
 class Bot {
 public:
-    vector<vector<vector<int>>> playGame(vector<vector<int>> shipLocations, int difficulty);
+    vector<pair<int,int>> playGame(vector<vector<int>> shipLocations, int difficulty);
 
 private:
     vector<vector<vector<int>>> boardStates;
+    vector<pair<int, int>> shots;
     vector<int> ships = {2,3,3,4,5};
     vector<pair<int,int>> hitShips;
     vector<vector<int>> probBoard;
