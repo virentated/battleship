@@ -96,7 +96,7 @@ bool Database::checkUser(const std::string &username, const std::string &passwor
 }
 
 bool Database::addBaseUser(const std::string &username, const std::string &password, enum IconColour iconColour) {
-    if (checkUser) {
+    if (checkUser(username, password)) {
         return false;
     }
 
@@ -108,6 +108,8 @@ bool Database::addBaseUser(const std::string &username, const std::string &passw
     totalGames.push_back(0);
     winRates.push_back(0);
     hitPercentages.push_back(0);
+
+    return true;
 }
 
 bool Database::changeUserIcon(const std::string &username, const std::string &password, enum IconColour iconColour) {
