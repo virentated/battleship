@@ -321,6 +321,7 @@ vector<pair<int, int>> Bot::playGame(vector<vector<int>> shipLocations, int diff
 
                 removeShips(nextSquare);
                 shipLocations[nextSquare.first][nextSquare.second] -= 100;
+                shots.emplace_back(nextSquare);
                 usedSquares.emplace_back(nextSquare);
                 boardStates.emplace_back(shipLocations);
             }
